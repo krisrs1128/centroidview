@@ -14,6 +14,10 @@ function id_fun(d) {
   return d.id;
 }
 
+function tile_id_fun(d) {
+  return d.column + "-" + d.row;
+}
+
 function parameter_defaults(opts) {
   var default_opts = {
     "n_clusters": 3,
@@ -50,7 +54,6 @@ function display_defaults(tree) {
 }
 
 function scales_dictionary(tree, data, param) {
-  console.log(tree);
   var coords = {
     "x": tree.map(function(d) { return d.x; }),
     "y": tree.map(function(d) { return d.y; })
@@ -59,7 +62,6 @@ function scales_dictionary(tree, data, param) {
   var groups = extract_unique(data, "group");
   var fill_vals = data.map(function(d) { return d.value; });
   var facet_x = extract_unique(data, "facet_x").map(parseFloat);
-  console.log(coords);
 
   return {
     "tile_x": d3.scaleBand()
@@ -94,5 +96,4 @@ function scales_dictionary(tree, data, param) {
       .domain([1, 2])
       .range([0, (param.facet_y_prop * param.elem_height - 30) / groups.length])
   };
-
 }
