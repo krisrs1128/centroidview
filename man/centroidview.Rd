@@ -4,7 +4,7 @@
 \alias{centroidview}
 \title{Study Centroids from a Hierarchical Clustering}
 \usage{
-centroidview(x, tree, groups, samples, width = NULL, height = NULL,
+centroidview(x, tree, group, facet, facet_x, width = NULL, height = NULL,
   elementId = NULL)
 }
 \description{
