@@ -36,13 +36,13 @@ function draw_tree(elem, root, tree_x_scale, tree_y_scale) {
       "r": 2,
       "fill": "#555",
       "fill-opacity": 0.4,
-      "cx": function(d) { return tree_x_scale(d.data.y); },
-      "cy": function(d) { return tree_y_scale(d.data.x); }
+      "cx": function(d) { return tree_x_scale(d.data.x); },
+      "cy": function(d) { return tree_y_scale(d.data.y); }
     });
 
   var link_fun = d3.linkHorizontal()
-      .x(function(d) { return tree_x_scale(d.data.y); })
-      .y(function(d) { return tree_y_scale(d.data.x); });
+      .x(function(d) { return tree_x_scale(d.data.x); })
+      .y(function(d) { return tree_y_scale(d.data.y); });
 
   d3.select(elem)
     .select("#links")
