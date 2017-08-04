@@ -7,7 +7,12 @@ HTMLWidgets.widget({
     return {
 
       renderValue: function(x) {
-        centroidview(el, x.phy_df);
+        console.log(x.melted_data)
+        centroidview(
+          el,
+          HTMLWidgets.dataframeToD3(x.phy_df),
+          HTMLWidgets.dataframeToD3(x.melted_data)
+        );
       },
 
       resize: function(width, height) {}
