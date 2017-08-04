@@ -26,6 +26,7 @@ function centroidview(elem, tree, data) {
 
   // draw the heatmap
   draw_heatmap(elem, data, scales.tree_y, scales.tile_x, scales.tile_fill);
+  draw_focus(elem, data, scales.tree_y, scales.tile_x);
 }
 
 function setup(elem, param) {
@@ -172,4 +173,28 @@ function draw_heatmap(elem, data, tree_y_scale, tile_x_scale, tile_fill_scale) {
       "width": tile_x_scale.range()[1] - tile_x_scale.range()[0],
       "fill-opacity": 0
     });
+}
+
+/* Draw shades / covers on the heatmap */
+function draw_focus(elem, data, tree_y_scale, tile_x_scale) {
+  var init_level = data[0].row;
+
+  var bandwidth = tree_y_scale.range()[1] / (tree_y_scale.domain()[1] - tree_y_scale.domain()[0]);
+  d3.select(elem)
+    .select("#tile_cover")
+    .selectAll(".tile_cover")
+    .data(data.filter(function(d) { return d.row == init_level;}), function(d) { return d.x; }).enter()
+    .append("rect")
+    .attrs({
+      "class": "tile_cover",
+      "y": function(d) { return tree_y_scale(d.x); },
+      "height": bandwidth,
+      "x": tile_x_scale.range()[0],
+      "width": tile_x_scale.range()[1] - tile_x_scale.range()[0],
+      "fill-opacity": 0
+    });
+
+  d3.select(elem)
+    .append("rect")
+    .attrs({"class": "hm_focus"});
 }
