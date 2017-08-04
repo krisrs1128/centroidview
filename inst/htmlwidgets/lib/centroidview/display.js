@@ -5,11 +5,30 @@
  * date: 08/04/2017
  */
 
-// some global variables
-function prepare_globals(tree) {
-  console.log(tree)
-  var root = d3.stratify()
-      .id(function(d) { return d.id; })
-      .parentId(function(d) { return d.parent; })(tree);
-  return root;
+function centroidview(elem, tree) {
+  var param = parameter_defaults({});
+  tree = HTMLWidgets.dataframeToD3(tree);
+  var display_opts = display_defaults(tree);
+  setup(elem, param);
+}
+
+function setup(elem, param) {
+  // create margins using margin convention
+  // https://bl.ocks.org/mbostock/3019563
+  var margin = {top: 20, right: 10, bottom: 20, left: 10};
+  var svg_elem = d3.select(elem)
+      .append("svg")
+      .attrs({
+        "width": param.elem_width,
+        "height": param.elem_height
+      });
+
+  svg_elem.append("rect")
+    .attrs({
+      "fill": "#F8F8F8",
+      "width": param.elem_width,
+      "height": param.elem_height
+    })
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 }
