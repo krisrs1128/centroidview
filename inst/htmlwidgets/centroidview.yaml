@@ -10,6 +10,7 @@ dependencies:
   - name: centroidview
     version: 0.0.0
     src: htmlwidgets/lib/centroidview/
+    stylesheet: style.css
     script:
       - display.js
       - data.js
