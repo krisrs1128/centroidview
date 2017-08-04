@@ -12,6 +12,8 @@ HTMLWidgets.widget({
 
       renderValue: function(x) {
 
+        console.log(x)
+        prepare_globals(x.phy_df.transposeArray2D())
         // TODO: code to render the widget, e.g.
         el.innerText = x.message;
 
