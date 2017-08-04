@@ -23,13 +23,18 @@ centroidview <- function(x,
   dendro <- reorder(as.dendrogram(tree), -colMeans(x))
   phy <- as.phylo(dendro)
 
-  node_data <- get_nodes_xy(dendro) %>%
-    as_data_frame() %>%
-    rename(y = V1, x = V2) %>%
-    mutate(x = -x)
-  node_data$column <- node_data$y %>%
-    seq_along() %>%
-    as.character()
+  ff <- tempfile()
+  png(filename=ff)
+  plot(phy)
+  dev.off()
+  unlink(ff)
+  plot_info <- get("last_plot.phylo", envir = .PlotPhyloEnv)
+
+  node_data <- data_frame(
+    column = as.character(seq_along(plot_info$xx)),
+    x = plot_info$xx,
+    y = plot_info$yy
+  )
 
   phy_df <- as_data_frame(phy$edge) %>%
     rename(parent = V1, column = V2) %>%
@@ -38,8 +43,9 @@ centroidview <- function(x,
 
   tmp_root <- data_frame(
     parent = "",
-    column = as.character(phy$edge[1, 1]), y = 0.03,
-    x = mean(phy_df$x)
+    column = as.character(phy$edge[1, 1]),
+    x = 0.0,
+    y = mean(phy_df$y)
   )
   phy_df <- rbind(phy_df, tmp_root)
 
