@@ -1,28 +1,21 @@
 HTMLWidgets.widget({
 
   name: 'centroidview',
-
   type: 'output',
 
   factory: function(el, width, height) {
-
-    // TODO: define shared variables for this instance
-
     return {
 
       renderValue: function(x) {
-
-        // TODO: code to render the widget, e.g.
-        el.innerText = x.message;
-
+        console.log(x.melted_data)
+        centroidview(
+          el,
+          HTMLWidgets.dataframeToD3(x.phy_df),
+          HTMLWidgets.dataframeToD3(x.melted_data)
+        );
       },
 
-      resize: function(width, height) {
-
-        // TODO: code to re-render the widget with a new size
-
-      }
-
+      resize: function(width, height) {}
     };
   }
 });

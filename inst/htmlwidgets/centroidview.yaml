@@ -1,7 +1,16 @@
-# (uncomment to add a dependency)
-# dependencies:
-#  - name:
-#    version:
-#    src:
-#    script:
-#    stylesheet:
+dependencies:
+  - name: d3
+    version: 4.10.0
+    src: htmlwidgets/lib/d3/
+    script: d3.v4.min.js
+  - name: d3-selection-multi
+    version: 0.4.1
+    src: htmlwidgets/lib/d3-selection-multi/
+    script: d3-selection-multi.v1.min.js
+  - name: centroidview
+    version: 0.0.0
+    src: htmlwidgets/lib/centroidview/
+    stylesheet: style.css
+    script:
+      - display.js
+      - data.js
