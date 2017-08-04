@@ -69,10 +69,10 @@ function scales_dictionary(tree, data, param) {
       .domain(d3.extent(fill_vals))
       .range(["#f8f8f8", "black"]),
     "tree_x": d3.scaleLinear()
-      .domain(d3.extent(coords.y))
-      .range([param.tree_x_prop * param.elem_width, 0]),
-    "tree_y": d3.scaleLinear()
       .domain(d3.extent(coords.x))
+      .range([0, param.tree_x_prop * param.elem_width]),
+    "tree_y": d3.scaleLinear()
+      .domain(d3.extent(coords.y))
       .range([0, param.tree_y_prop * param.elem_height]),
     "centroid_x": d3.scaleLinear()
       .domain(d3.extent(facet_x))
