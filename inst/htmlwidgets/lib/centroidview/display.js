@@ -21,10 +21,12 @@ function centroidview(elem, tree, data) {
 
   // Draw the tree
   draw_tree(elem, display.root, scales.tree_x, scales.tree_y);
-
+  tree_voronoi(elem, display.root, scales.tree_x, scales.tree_y, scales.tile_x,
+               param.margin, true);
 }
 
 function draw_tree(elem, root, tree_x_scale, tree_y_scale) {
+  // draw nodes
   d3.cluster()(root);
   d3.select(elem)
     .select("#subtree_0")
@@ -40,6 +42,7 @@ function draw_tree(elem, root, tree_x_scale, tree_y_scale) {
       "cy": function(d) { return tree_y_scale(d.data.y); }
     });
 
+  // draw links
   var link_fun = d3.linkHorizontal()
       .x(function(d) { return tree_x_scale(d.data.x); })
       .y(function(d) { return tree_y_scale(d.data.y); });
@@ -53,6 +56,38 @@ function draw_tree(elem, root, tree_x_scale, tree_y_scale) {
       "class": "link",
       "stroke": "#555",
       "d": link_fun
+    });
+}
+
+function tree_voronoi(elem, root, tree_x_scale, tree_y_scale, tile_x_scale,
+                      margin, responsive) {
+
+  // Define voronoi polygons for the tree nodes
+  var voronoi = d3.voronoi()
+      .x(function(d) { return tree_x_scale(d.data.x); })
+      .y(function(d) { return tree_y_scale(d.data.y); })
+      .extent([
+        [0, 0],
+        [tile_x_scale.range()[0], tree_y_scale.range()[1]]
+      ]);
+
+  d3.select(elem)
+    .select("#voronoi")
+    .selectAll(".voronoi")
+    .data(voronoi(root.descendants()).polygons()).enter()
+    .append("path")
+    .attrs({
+      "id": function(d) { return d.data.id; },
+      "d": function(d) { return "M" + d.join("L") + "Z"; },
+      "class": "voronoi",
+      "fill": "none",
+      "pointer-events": "all"
+    })
+    .on("mouseover", function(d) {
+      if (responsive) {
+        console.log("mouseover")
+        // update_wrapper(d);
+      }
     });
 }
 
