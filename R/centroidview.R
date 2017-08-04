@@ -5,7 +5,7 @@
 #' @import htmlwidgets
 #' @importFrom dplyr rename mutate
 #' @importFrom tibble data_frame as_data_frame
-#' @importFrom dendextend as.phylo.dendrogram get_nodes_xy
+#' @importFrom dendextend as.phylo.dendrogram
 #' @importFrom ape as.phylo
 #' @importFrom plyr dlply .
 #'
@@ -23,13 +23,7 @@ centroidview <- function(x,
   dendro <- reorder(as.dendrogram(tree), -colMeans(x))
   phy <- as.phylo(dendro)
 
-  ff <- tempfile()
-  png(filename=ff)
-  plot(phy)
-  dev.off()
-  unlink(ff)
-  plot_info <- get("last_plot.phylo", envir = .PlotPhyloEnv)
-
+  plot_info <- phy_plot_data(phy)
   node_data <- data_frame(
     column = as.character(seq_along(plot_info$xx)),
     x = plot_info$xx,
@@ -84,4 +78,13 @@ centroidview <- function(x,
     package = 'centroidview',
     elementId = elementId
   )
+}
+
+phy_plot_data <- function(phy) {
+  ff <- tempfile()
+  png(filename=ff)
+  plot(phy)
+  dev.off()
+  unlink(ff)
+  get("last_plot.phylo", envir = .PlotPhyloEnv)
 }
