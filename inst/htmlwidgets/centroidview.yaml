@@ -3,6 +3,10 @@ dependencies:
     version: 4.10.0
     src: htmlwidgets/lib/d3/
     script: d3.v4.min.js
+  - name: d3-voronoi
+    version: 1.0.0
+    src: htmlwidgets/lib/d3-voronoi/
+    script: d3-voronoi.v1.min.js
   - name: d3-selection-multi
     version: 0.4.1
     src: htmlwidgets/lib/d3-selection-multi/
