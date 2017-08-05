@@ -5,9 +5,15 @@
  * date: 08/04/2017
  */
 
+var cur_cluster = 1;
+var responsive = true;
+var max_cluster = 1;
+
 function centroidview(elem, tree, data) {
   var param = parameter_defaults({});
-  var display = display_defaults(tree);
+  var root = d3.stratify()
+      .id(function(d) { return d.column; })
+      .parentId(function(d) { return d.parent; })(tree);
 
   // setup background display elements
   setup(elem, param);
@@ -20,9 +26,8 @@ function centroidview(elem, tree, data) {
   var facet_x = extract_unique(data, "facet_x");
 
   // Draw the tree
-  draw_tree(elem, display.root, scales.tree_x, scales.tree_y);
-  tree_voronoi(elem, display.root, scales.tree_x, scales.tree_y, scales.tile_x,
-               param.margin, true);
+  draw_tree(elem, root, scales.tree_x, scales.tree_y);
+  tree_voronoi(elem, root, scales, param.margin, max_cluster, cur_cluster, true);
 
   // draw the heatmap
   draw_heatmap(elem, data, scales.tree_y, scales.tile_x, scales.tile_fill);
@@ -109,16 +114,15 @@ function draw_tree(elem, root, tree_x_scale, tree_y_scale) {
     });
 }
 
-function tree_voronoi(elem, root, tree_x_scale, tree_y_scale, tile_x_scale,
-                      margin, responsive) {
+function tree_voronoi(elem, root, scales, margin, responsive) {
 
   // Define voronoi polygons for the tree nodes
   var voronoi = d3.voronoi()
-      .x(function(d) { return tree_x_scale(d.data.x); })
-      .y(function(d) { return tree_y_scale(d.data.y); })
+      .x(function(d) { return scales.tree_x(d.data.x); })
+      .y(function(d) { return scales.tree_y(d.data.y); })
       .extent([
         [0, 0],
-        [tile_x_scale.range()[0], tree_y_scale.range()[1]]
+        [scales.tile_x.range()[0], scales.tree_y.range()[1]]
       ]);
 
   d3.select(elem)
@@ -136,7 +140,7 @@ function tree_voronoi(elem, root, tree_x_scale, tree_y_scale, tile_x_scale,
     .on("mouseover", function(d) {
       if (responsive) {
         console.log("mouseover")
-        // update_wrapper(d);
+        update_wrapper(elem, root, d, scales, cur_cluster, max_cluster);
       }
     });
 }
