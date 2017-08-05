@@ -18,3 +18,4 @@ dependencies:
     script:
       - display.js
       - data.js
+      - update.js
