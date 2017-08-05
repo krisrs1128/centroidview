@@ -38,10 +38,10 @@ function update_wrapper(elem, root, d, scales, cur_cluster, n_clusters) {
     scales.tree_y,
     scales.cluster_cols[cur_cluster]
   );
-  // update_heatmap(
-  //   d3.select(elem),
-  //   opts.n_clusters
-  // );
+  update_heatmap_cover(
+    elem,
+    n_clusters
+  );
 }
 
 function update_heatmap_focus(focus_elem, cur_tree, y_scale, stroke_color,
@@ -105,6 +105,21 @@ function update_tree_focus(elem, cluster_data, cur_cluster, n_clusters, x_scale,
           return 0.4;
         }
         return 0;
+      }
+    });
+}
+
+function update_heatmap_cover(elem, n_clusters) {
+  var highlighted_ids = selected_ids(elem, n_clusters);
+  d3.select(elem)
+    .select("#tile_cover")
+    .selectAll(".tile_cover")
+    .attrs({
+      "fill-opacity": function(d)  {
+        if (highlighted_ids.indexOf(d.column) != -1) {
+          return 0;
+        }
+        return 0.4;
       }
     });
 }
