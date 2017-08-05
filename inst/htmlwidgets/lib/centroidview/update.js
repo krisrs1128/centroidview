@@ -21,14 +21,14 @@ function subtree(hierarchy, query_id) {
 
 function update_wrapper(elem, root, d, scales, cur_cluster, n_clusters) {
   var cur_tree = subtree(root, d.data.id);
-  // update_heatmap_focus(
-  //   d3.select(elem)
-  //     .select("#hm_focus_" + cur_cluster),
-  //   cur_tree,
-  //   scales.tree_y,
-  //   scales.cluster_cols[cur_cluster],
-  //   scales.tile_x
-  // );
+  update_heatmap_focus(
+    d3.select(elem)
+      .select("#hm_focus_" + cur_cluster),
+    cur_tree,
+    scales.tree_y,
+    scales.cluster_cols[cur_cluster],
+    scales.tile_x
+  );
   update_tree_focus(
     elem,
     cur_tree.descendants(),
@@ -42,6 +42,35 @@ function update_wrapper(elem, root, d, scales, cur_cluster, n_clusters) {
   //   d3.select(elem),
   //   opts.n_clusters
   // );
+}
+
+function update_heatmap_focus(focus_elem, cur_tree, y_scale, stroke_color,
+                              tile_x_scale) {
+  var cur_y = cur_tree.leaves()
+      .map(function(d) { return d.data.y; });
+
+  var bandwidth = y_scale.range()[1] / (y_scale.domain()[1] - y_scale.domain()[0]);
+  var y_extent = d3.extent(cur_y);
+
+  var focus_rect = focus_elem.select("rect");
+  var n_rects = focus_rect.nodes().length;
+  if (n_rects === 0) {
+    focus_elem.append("rect");
+  }
+
+  focus_rect = focus_elem.selectAll("rect")
+    .transition()
+    .duration(500)
+    .attrs({
+      "class": "hm_focus",
+      "y": y_scale(y_extent[0]),
+      "x": tile_x_scale.range()[0],
+      "height": y_scale(y_extent[1]) - y_scale(y_extent[0]) + bandwidth,
+      "width": tile_x_scale.range()[1] - tile_x_scale.range()[0],
+      "stroke": stroke_color,
+      "stroke-opacity": 0.7,
+      "fill": "none"
+    });
 }
 
 function update_tree_focus(elem, cluster_data, cur_cluster, n_clusters, x_scale,
