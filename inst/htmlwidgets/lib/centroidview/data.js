@@ -18,6 +18,20 @@ function tile_id_fun(d) {
   return d.column + "-" + d.row;
 }
 
+// ids selected by any cluster
+function selected_ids(elem, n_clusters) {
+  var cur_labels = [];
+  for (var k = 1; k <= n_clusters; k++) {
+    cur_labels = cur_labels.concat(
+      d3.select(elem)
+        .select("#subtree_" + k)
+        .selectAll(".hcnode")
+        .data().map(id_fun)
+    );
+  }
+  return cur_labels;
+}
+
 function parameter_defaults(opts) {
   var default_opts = {
     "n_clusters": 3,
@@ -37,20 +51,6 @@ function parameter_defaults(opts) {
     }
   }
   return opts;
-}
-
-// some display options
-function display_defaults(tree) {
-  var root = d3.stratify()
-      .id(function(d) { return d.column; })
-      .parentId(function(d) { return d.parent; })(tree);
-
-  return {
-    "root": root,
-    "responsive": true,
-    "cur_cluster": 1,
-    "max_cluster": 1
-  };
 }
 
 function scales_dictionary(tree, data, param) {

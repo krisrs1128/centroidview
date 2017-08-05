@@ -5,9 +5,15 @@
  * date: 08/04/2017
  */
 
+var cur_cluster = 1;
+var responsive = true;
+var max_cluster = 1;
+
 function centroidview(elem, tree, data) {
   var param = parameter_defaults({});
-  var display = display_defaults(tree);
+  var root = d3.stratify()
+      .id(function(d) { return d.column; })
+      .parentId(function(d) { return d.parent; })(tree);
 
   // setup background display elements
   setup(elem, param);
@@ -20,12 +26,36 @@ function centroidview(elem, tree, data) {
   var facet_x = extract_unique(data, "facet_x");
 
   // Draw the tree
-  draw_tree(elem, display.root, scales.tree_x, scales.tree_y);
-  tree_voronoi(elem, display.root, scales.tree_x, scales.tree_y, scales.tile_x,
-               param.margin, true);
+  draw_tree(
+    elem,
+    root,
+    scales.tree_x,
+    scales.tree_y
+  );
+  tree_voronoi(
+    elem,
+    root,
+    scales,
+    param.margin,
+    param.n_clusters,
+    cur_cluster,
+    true
+  );
 
   // draw the heatmap
-  draw_heatmap(elem, data, scales.tree_y, scales.tile_x, scales.tile_fill);
+  draw_heatmap(
+    elem,
+    data,
+    scales.tree_y,
+    scales.tile_x,
+    scales.tile_fill
+  );
+  draw_focus(
+    elem,
+    data,
+    scales.tree_y,
+    scales.tile_x
+  );
 }
 
 function setup(elem, param) {
@@ -108,16 +138,14 @@ function draw_tree(elem, root, tree_x_scale, tree_y_scale) {
     });
 }
 
-function tree_voronoi(elem, root, tree_x_scale, tree_y_scale, tile_x_scale,
-                      margin, responsive) {
-
+function tree_voronoi(elem, root, scales, margin, n_clusters, responsive) {
   // Define voronoi polygons for the tree nodes
   var voronoi = d3.voronoi()
-      .x(function(d) { return tree_x_scale(d.data.x); })
-      .y(function(d) { return tree_y_scale(d.data.y); })
+      .x(function(d) { return scales.tree_x(d.data.x); })
+      .y(function(d) { return scales.tree_y(d.data.y); })
       .extent([
         [0, 0],
-        [tile_x_scale.range()[0], tree_y_scale.range()[1]]
+        [scales.tile_x.range()[0], scales.tree_y.range()[1]]
       ]);
 
   d3.select(elem)
@@ -134,8 +162,7 @@ function tree_voronoi(elem, root, tree_x_scale, tree_y_scale, tile_x_scale,
     })
     .on("mouseover", function(d) {
       if (responsive) {
-        console.log("mouseover")
-        // update_wrapper(d);
+        update_wrapper(elem, root, d, scales, cur_cluster, n_clusters);
       }
     });
 }
@@ -151,25 +178,34 @@ function draw_heatmap(elem, data, tree_y_scale, tile_x_scale, tile_fill_scale) {
     .attrs({
       "class": "tile",
       "x": function(d) { return tile_x_scale(d.row); },
-      "y": function(d) {return tree_y_scale(d.column);},
+      "y": function(d) {return tree_y_scale(d.y);},
       "width": tile_x_scale.bandwidth(),
       "height": bandwidth,
       "fill": function(d) { return tile_fill_scale(d.value); }
     });
 
-  // Draw shades / covers on the heatmap
+}
+
+/* Draw shades / covers on the heatmap */
+function draw_focus(elem, data, tree_y_scale, tile_x_scale) {
   var init_level = data[0].row;
+
+  var bandwidth = tree_y_scale.range()[1] / (tree_y_scale.domain()[1] - tree_y_scale.domain()[0]);
   d3.select(elem)
     .select("#tile_cover")
     .selectAll(".tile_cover")
-    .data(data.filter(function(d) { return d.row == init_level;}), function(d) { return d.x; }).enter()
+    .data(data.filter(function(d) { return d.row == init_level;}), function(d) { return d.y; }).enter()
     .append("rect")
     .attrs({
       "class": "tile_cover",
-      "y": function(d) { return tree_y_scale(d.column); },
+      "y": function(d) { return tree_y_scale(d.y); },
       "height": bandwidth,
       "x": tile_x_scale.range()[0],
       "width": tile_x_scale.range()[1] - tile_x_scale.range()[0],
       "fill-opacity": 0
     });
+
+  d3.select(elem)
+    .append("rect")
+    .attrs({"class": "hm_focus"});
 }
