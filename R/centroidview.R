@@ -7,6 +7,45 @@
 #' @importFrom tibble data_frame as_data_frame
 #' @importFrom plyr dlply .
 #'
+#' @examples
+#' library("ape")
+#' library("tibble")
+#' library("dplyr")
+#'
+#' # simulate random matrix
+#' n <- 1000
+#' p <- 20
+#' x <- matrix(rnorm(n * p), n, p)
+#' hc <- hclust(dist(x))
+#'
+#' facet_x <- c(1:(p/2), 1:(p/2))
+#' group <- sample(LETTERS[1:4], n, replace = TRUE)
+#' facet <- c(rep("1", p/2), rep("2", p/2))
+#'
+#' ## prepare the tree coordinates data
+#' phy <- as.phylo(hc)
+#' plot(phy)
+#' plot_info <- get("last_plot.phylo", envir = .PlotPhyloEnv)
+#' phy_df <- data_frame(
+#'   column = as.character(seq_along(plot_info$yy)),
+#'   x = plot_info$xx,
+#'   y = plot_info$yy
+#' )
+#'
+#' # prepare centroidview input data
+#' phy_df <- as_data_frame(phy$edge) %>%
+#'   rename(parent = V1, column = V2) %>%
+#'   mutate_all(as.character) %>%
+#'   left_join(phy_df)
+#' tmp_root <- data_frame(
+#'   parent = "",
+#'   column = as.character(phy$edge[1, 1]),
+#'   x = 0.0,
+#'   y = mean(phy_df$y)
+#' )
+#' phy_df <- rbind(phy_df, tmp_root)
+#'
+#' centroidview(x, phy_df, group, facet, facet_x)
 #' @export
 centroidview <- function(x,
                          phy_df,
