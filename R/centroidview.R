@@ -36,16 +36,22 @@ centroidview <- function(x,
   names(ts_data) <- NULL
 
   ## forward options using x
-  fw = list(
+  fw <- list(
     "phy_df" = phy_df,
     "melted_data" = melted_data,
     "ts_data" = ts_data
   )
 
   ## create widget
+  attr(fw, 'TOJSON_ARGS') <- list(
+    dataframe = "rows",
+    auto_unbox = FALSE,
+    force = FALSE
+  )
+
   htmlwidgets::createWidget(
     name = 'centroidview',
-    fw,
+    x = fw,
     width = width,
     height = height,
     package = 'centroidview',
