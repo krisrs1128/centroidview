@@ -2,7 +2,7 @@
  * Visualization of hierarchical clustering centroids
  *
  * author: sankaran.kris@gmail./*
- * date: 08/04/2017
+ * date: 08/08/2017
  */
 
 var cur_cluster = 1;
