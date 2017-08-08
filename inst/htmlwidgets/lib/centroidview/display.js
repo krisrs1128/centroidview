@@ -9,7 +9,7 @@ var cur_cluster = 1;
 var responsive = true;
 var max_cluster = 1;
 
-function centroidview(elem, tree, data) {
+function centroidview(elem, tree, data, ts_data) {
   var param = parameter_defaults({});
   var root = d3.stratify()
       .id(function(d) { return d.column; })
@@ -35,10 +35,12 @@ function centroidview(elem, tree, data) {
   tree_voronoi(
     elem,
     root,
+    ts_data,
     scales,
     param.margin,
     param.n_clusters,
     cur_cluster,
+    facet_x,
     true
   );
 
@@ -138,7 +140,15 @@ function draw_tree(elem, root, tree_x_scale, tree_y_scale) {
     });
 }
 
-function tree_voronoi(elem, root, scales, margin, n_clusters, responsive) {
+function tree_voronoi(elem,
+                      root,
+                      ts_data,
+                      scales,
+                      margin,
+                      n_clusters,
+                      cur_cluster,
+                      facet_x,
+                      responsive) {
   // Define voronoi polygons for the tree nodes
   var voronoi = d3.voronoi()
       .x(function(d) { return scales.tree_x(d.data.x); })
@@ -162,7 +172,16 @@ function tree_voronoi(elem, root, scales, margin, n_clusters, responsive) {
     })
     .on("mouseover", function(d) {
       if (responsive) {
-        update_wrapper(elem, root, d, scales, cur_cluster, n_clusters);
+        update_wrapper(
+          elem,
+          root,
+          ts_data,
+          d,
+          scales,
+          cur_cluster,
+          n_clusters,
+          facet_x
+        );
       }
     });
 }
