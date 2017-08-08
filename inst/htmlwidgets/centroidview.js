@@ -16,9 +16,7 @@ HTMLWidgets.widget({
             ts_data[cur_ix].push(x.melted_data[i]);
           }
         }
-        console.log(ts_data);
         ts_data = Object.keys(ts_data).map(function (key) { return ts_data[key]; });
-        console.log(ts_data);
 
         centroidview(
           el,
