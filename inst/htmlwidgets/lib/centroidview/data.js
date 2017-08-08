@@ -18,6 +18,10 @@ function tile_id_fun(d) {
   return d.column + "-" + d.row;
 }
 
+function ts_id_fun(d) {
+  return d[0].column;
+}
+
 // ids selected by any cluster
 function selected_ids(elem, n_clusters) {
   var cur_labels = [];
@@ -51,6 +55,29 @@ function parameter_defaults(opts) {
     }
   }
   return opts;
+}
+
+function elemwise_mean(x_array, facets, facets_x) {
+  var means = [];
+  for (var j = 0; j < facets.length; j++) {
+    var array_sub = x_array.filter(function(d) {
+      return parseFloat(d[0].facet) == facets[j];
+    });
+
+    var facet_mean = [];
+    for (var t = 0; t < array_sub[0].length; t++) {
+      facet_mean.push(
+        {
+          "facet": facets[j],
+          "facet_x": array_sub[0][t].facet_x,
+          "value": d3.mean(array_sub.map(function(x) { return x[t].value; }))
+        }
+      );
+    }
+    means.push(facet_mean);
+  }
+
+  return means;
 }
 
 function scales_dictionary(tree, data, param) {
