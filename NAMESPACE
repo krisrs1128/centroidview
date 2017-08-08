@@ -2,9 +2,6 @@
 
 export(centroidview)
 import(htmlwidgets)
-importFrom(ape,as.phylo)
-importFrom(dendextend,as.phylo.dendrogram)
-importFrom(dendextend,get_nodes_xy)
 importFrom(dplyr,mutate)
 importFrom(dplyr,rename)
 importFrom(plyr,.)
