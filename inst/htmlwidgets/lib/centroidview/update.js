@@ -19,8 +19,23 @@ function subtree(hierarchy, query_id) {
   }
 }
 
-function update_wrapper(elem, root, d, scales, cur_cluster, n_clusters) {
+function update_wrapper(elem,
+                        root,
+                        ts_data,
+                        d,
+                        scales,
+                        cur_cluster,
+                        n_clusters,
+                        facet_x) {
   var cur_tree = subtree(root, d.data.id);
+  var line = d3.line()
+      .x(function(d) {
+        return scales.centroid_x(d.facet_x);
+      })
+    .y(function(d) {
+      return scales.facet_offset(d.facet) + scales.centroid_y(d.value);
+    });
+
   update_heatmap_focus(
     d3.select(elem)
       .select("#hm_focus_" + cur_cluster),
@@ -42,6 +57,17 @@ function update_wrapper(elem, root, d, scales, cur_cluster, n_clusters) {
     elem,
     n_clusters
   );
+  update_ts_focus(
+    elem,
+    ts_data,
+    line,
+    selected_ids(elem, n_clusters),
+    cur_cluster,
+    scales.cluster_cols[cur_cluster],
+    scales.facet_offset.domain(),
+    facet_x
+  );
+
 }
 
 function update_heatmap_focus(focus_elem, cur_tree, y_scale, stroke_color,
@@ -121,5 +147,57 @@ function update_heatmap_cover(elem, n_clusters) {
         }
         return 0.4;
       }
+    });
+}
+
+function update_ts_focus(elem,
+                         ts_data,
+                         line,
+                         cur_ids,
+                         cur_cluster,
+                         stroke_color,
+                         facets,
+                         facet_x) {
+  var cluster_data = ts_data.filter(function(d) {
+    return cur_ids.indexOf(d[0].column) != -1;
+  });
+  d3.select(elem)
+    .select("#time_series_" + cur_cluster)
+    .selectAll(".highlighted_series")
+    .data(cluster_data, ts_id_fun).exit()
+    .remove();
+
+  d3.select(elem)
+    .select("#time_series_" + cur_cluster)
+    .selectAll(".highlighted_series")
+    .data(cluster_data, ts_id_fun).enter()
+    .append("path")
+    .attrs({
+      "class": "highlighted_series",
+      "stroke": stroke_color,
+      "d": line
+    });
+
+  var means = elemwise_mean(cluster_data, facets, facet_x);
+  d3.select(elem)
+    .select("#centroids_" + cur_cluster)
+    .selectAll(".centroid")
+    .data(means).enter()
+    .append("path")
+    .attrs({
+      "stroke": stroke_color,
+      "class": "centroid",
+      "d": line
+    });
+
+  d3.select(elem)
+    .select("#centroids_" + cur_cluster)
+    .selectAll(".centroid")
+    .transition()
+    .duration(700)
+    .attrs({
+      "stroke": stroke_color,
+      "class": "centroid",
+      "d": line
     });
 }
