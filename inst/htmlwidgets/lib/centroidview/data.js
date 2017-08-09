@@ -80,6 +80,51 @@ function elemwise_mean(x_array, facets, facets_x) {
   return means;
 }
 
+function group_counts(elem, data, n_clusters) {
+  var cluster_counts = {};
+  for (var k = 1; k <= n_clusters; k++) {
+    var cur_ids = d3.select(elem)
+        .select("#subtree_" + k)
+        .selectAll(".hcnode").data()
+        .map(id_fun);
+    var groups = data.filter(function(d) { return d.row == "D1"; })
+        .filter(function(d) { return cur_ids.indexOf(d.column) != -1; })
+        .map(function(d) { return d.group; });
+
+    var counts = {};
+    for(var i = 0; i < groups.length; i++) {
+      var group = groups[i];
+      counts[group] = counts[group] ? counts[group]+1 : 1;
+    }
+    cluster_counts[k] = counts;
+  }
+
+  return cluster_counts;
+}
+
+function counts_array(counts) {
+  var arr = [];
+  var clusters = Object.keys(counts);
+  for (var k = 0; k < clusters.length; k++) {
+    var groups = Object.keys(counts[clusters[k]]);
+    for (var i = 0; i < groups.length; i++) {
+      arr.push({
+        "cluster": clusters[k],
+        "group": groups[i],
+        "count": counts[clusters[k]][groups[i]]
+      });
+    }
+  }
+
+  return arr;
+}
+
+function group_array(elem, n_clusters) {
+  return counts_array(
+    group_counts(elem, n_clusters)
+  );
+}
+
 function scales_dictionary(tree, data, param) {
   var coords = {
     "x": tree.map(function(d) { return d.x; }),
