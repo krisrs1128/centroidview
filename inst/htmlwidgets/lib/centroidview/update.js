@@ -21,6 +21,7 @@ function subtree(hierarchy, query_id) {
 
 function update_wrapper(elem,
                         root,
+                        data,
                         ts_data,
                         d,
                         scales,
@@ -66,6 +67,13 @@ function update_wrapper(elem,
     scales.cluster_cols[cur_cluster],
     scales.facet_offset.domain(),
     facet_x
+  );
+  update_histo(
+    elem,
+    data,
+    scales,
+    n_clusters,
+    histo_axis
   );
 
 }
@@ -199,5 +207,51 @@ function update_ts_focus(elem,
       "stroke": stroke_color,
       "class": "centroid",
       "d": line
+    });
+}
+
+function update_histo(elem, data, scales, n_clusters, histo_axis) {
+  // reset scales
+  var counts = group_array(elem, data, n_clusters);
+  scales.histo_x.domain(
+    [0, d3.max(counts.map(function(d) { return d.count; }))]
+  );
+
+  d3.select(elem)
+    .transition()
+    .duration(700)
+    .select("#histo_axis")
+    .call(histo_axis.scale(scales.histo_x));
+
+  d3.select(elem)
+    .select("#group_histo")
+    .selectAll(".histo_bar")
+    .data(counts, function(d) { return d.cluster + d.group; }).enter()
+    .append("rect")
+    .attrs({
+     "class": "histo_bar",
+      "x": scales.centroid_x.range()[0],
+      "width": 0,
+      "y": function(d) {return scales.histo_group(d.group) + scales.histo_offset(d.cluster);},
+      "height": scales.histo_offset.step(),
+      "fill": function(d) { return scales.cluster_cols[d.cluster]; }
+    });
+
+  d3.select(elem)
+    .select("#group_histo")
+    .selectAll(".histo_bar")
+    .data(counts, function(d) { return d.cluster + d.group; }).exit()
+    .attrs({"width": 0})
+    .remove();
+
+  d3.select(elem)
+    .select("#group_histo")
+    .selectAll(".histo_bar")
+    .transition()
+    .duration(700)
+    .attrs({
+      "width": function(d) { return scales.histo_x(d.count); },
+      "y": function(d) {return scales.histo_group(d.group) + scales.histo_offset(d.cluster);},
+      "height": scales.histo_offset.step()
     });
 }
