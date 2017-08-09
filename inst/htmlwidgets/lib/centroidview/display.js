@@ -35,6 +35,7 @@ function centroidview(elem, tree, data, ts_data) {
   tree_voronoi(
     elem,
     root,
+    data,
     ts_data,
     scales,
     param.margin,
@@ -142,6 +143,7 @@ function draw_tree(elem, root, tree_x_scale, tree_y_scale) {
 
 function tree_voronoi(elem,
                       root,
+                      data,
                       ts_data,
                       scales,
                       margin,
@@ -175,6 +177,7 @@ function tree_voronoi(elem,
         update_wrapper(
           elem,
           root,
+          data,
           ts_data,
           d,
           scales,
