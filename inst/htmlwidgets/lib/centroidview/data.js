@@ -82,12 +82,13 @@ function elemwise_mean(x_array, facets, facets_x) {
 
 function group_counts(elem, data, n_clusters) {
   var cluster_counts = {};
+  var init_row = data[0].row;
   for (var k = 1; k <= n_clusters; k++) {
     var cur_ids = d3.select(elem)
         .select("#subtree_" + k)
         .selectAll(".hcnode").data()
         .map(id_fun);
-    var groups = data.filter(function(d) { return d.row == "D1"; })
+    var groups = data.filter(function(d) { return d.row == init_row; })
         .filter(function(d) { return cur_ids.indexOf(d.column) != -1; })
         .map(function(d) { return d.group; });
 
@@ -119,9 +120,9 @@ function counts_array(counts) {
   return arr;
 }
 
-function group_array(elem, n_clusters) {
+function group_array(elem, data, n_clusters) {
   return counts_array(
-    group_counts(elem, n_clusters)
+    group_counts(elem, data, n_clusters)
   );
 }
 
