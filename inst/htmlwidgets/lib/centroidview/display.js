@@ -2,12 +2,13 @@
  * Visualization of hierarchical clustering centroids
  *
  * author: sankaran.kris@gmail./*
- * date: 08/08/2017
+ * date: 08/10/2017
  */
 
 var cur_cluster = 1;
 var responsive = true;
 var max_cluster = 1;
+var scales;
 
 function centroidview(elem, tree, data, ts_data, width, height) {
   var param = parameter_defaults({
@@ -25,7 +26,7 @@ function centroidview(elem, tree, data, ts_data, width, height) {
   param.elem_height = param.elem_height - param.margin.top - param.margin.bottom;
 
   // get some of the scales
-  var scales = scales_dictionary(tree, data, param);
+  scales = scales_dictionary(tree, data, param);
   var facet_x = extract_unique(data, "facet_x");
   var histo_axis = d3.axisBottom(scales.histo_x)
       .tickSize(0)
@@ -47,9 +48,7 @@ function centroidview(elem, tree, data, ts_data, width, height) {
     scales,
     param.margin,
     param.n_clusters,
-    cur_cluster,
-    facet_x,
-    true
+    facet_x
   );
 
   // draw the heatmap
@@ -73,6 +72,14 @@ function centroidview(elem, tree, data, ts_data, width, height) {
     data,
     scales.histo_group,
     scales.centroid_x.range()[0],
+    param.elem_width,
+    param.elem_height
+  );
+
+  // add the button interactivity
+  draw_buttons(
+    elem,
+    param.n_clusters,
     param.elem_width,
     param.elem_height
   );
@@ -166,9 +173,7 @@ function tree_voronoi(elem,
                       scales,
                       margin,
                       n_clusters,
-                      cur_cluster,
-                      facet_x,
-                      responsive) {
+                      facet_x) {
   // Define voronoi polygons for the tree nodes
   var voronoi = d3.voronoi()
       .x(function(d) { return scales.tree_x(d.data.x); })
@@ -245,10 +250,6 @@ function draw_focus(elem, data, tree_y_scale, tile_x_scale) {
       "width": tile_x_scale.range()[1] - tile_x_scale.range()[0],
       "fill-opacity": 0
     });
-
-  d3.select(elem)
-    .append("rect")
-    .attrs({"class": "hm_focus"});
 }
 
 function draw_histo(elem,
@@ -277,5 +278,35 @@ function draw_histo(elem,
       "transform": "translate("  +
         histo_x_start + "," +
         (elem_height) + ")"
+    });
+}
+
+function draw_buttons(elem, n_clusters, elem_width, elem_height) {
+  d3.select(elem)
+    .select("#base")
+    .on("click", function() {responsive = !responsive;});
+
+  d3.select(elem)
+    .select("#base")
+    .on("dblclick",function() {
+      if (max_cluster < n_clusters) {
+        max_cluster += 1;
+        cur_cluster = max_cluster;
+        scales.histo_offset.domain(d3.range(1, max_cluster + 2));
+      }
+    });
+
+  d3.select(elem)
+    .select("#base")
+    .on("wheel.zoom", function(d) {
+      if (d3.event.wheelDeltaY > 0) {
+        cur_cluster = cur_cluster % max_cluster + 1;
+      } else {
+        var tmp = cur_cluster % max_cluster - 1;
+        if (tmp < 1) {
+          tmp += max_cluster;
+        }
+        cur_cluster = tmp;
+      }
     });
 }
