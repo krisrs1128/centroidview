@@ -2,7 +2,7 @@
  * Update an initialized centroidview display
  *
  * author: sankaran.kris@gmail.com
- * date: 08/08/2017
+ * date: 08/10/2017
  */
 
 function subtree(hierarchy, query_id) {

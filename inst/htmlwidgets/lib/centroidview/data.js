@@ -2,7 +2,7 @@
  * Functions for creating and modifying data
  *
  * author: sankaran.kris@gmail.com
- * date: 08/08/2017
+ * date: 08/10/2017
  */
 
 function extract_unique(x, key) {
