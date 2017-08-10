@@ -14,6 +14,7 @@ This creates an interactive heatmap + hierarchical clustering view.
 library("ape")
 library("tibble")
 library("dplyr")
+library("tidyr")
 
 # simulate random matrix
 n <- 100
