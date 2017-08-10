@@ -245,10 +245,6 @@ function draw_focus(elem, data, tree_y_scale, tile_x_scale) {
       "width": tile_x_scale.range()[1] - tile_x_scale.range()[0],
       "fill-opacity": 0
     });
-
-  d3.select(elem)
-    .append("rect")
-    .attrs({"class": "hm_focus"});
 }
 
 function draw_histo(elem,
