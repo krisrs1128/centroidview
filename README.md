@@ -1,7 +1,7 @@
 # centroidview
 
 This is an R package to study the centroids associated with a hierarchical
-clustering. To install, used
+clustering. To install, run
 
 ```
 library("devtools")
