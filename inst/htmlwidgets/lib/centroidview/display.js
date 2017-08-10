@@ -283,20 +283,30 @@ function draw_histo(elem,
 
 function draw_buttons(elem, n_clusters, elem_width, elem_height) {
   d3.select(elem)
-    .append("button")
-    .text("Cycle");
-
-  d3.select(elem)
     .select("#base")
     .on("click", function() {responsive = !responsive;});
 
-
-  d3.select(elem).select("#base")
+  d3.select(elem)
+    .select("#base")
     .on("dblclick",function() {
       if (max_cluster < n_clusters) {
         max_cluster += 1;
         cur_cluster = max_cluster;
         scales.histo_offset.domain(d3.range(1, max_cluster + 2));
+      }
+    });
+
+  d3.select(elem)
+    .select("#base")
+    .on("wheel.zoom", function(d) {
+      if (d3.event.wheelDeltaY > 0) {
+        cur_cluster = cur_cluster % max_cluster + 1;
+      } else {
+        var tmp = cur_cluster % max_cluster - 1;
+        if (tmp < 1) {
+          tmp += max_cluster;
+        }
+        cur_cluster = tmp;
       }
     });
 }
