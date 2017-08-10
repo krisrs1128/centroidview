@@ -9,8 +9,11 @@ var cur_cluster = 1;
 var responsive = true;
 var max_cluster = 1;
 
-function centroidview(elem, tree, data, ts_data) {
-  var param = parameter_defaults({});
+function centroidview(elem, tree, data, ts_data, width, height) {
+  var param = parameter_defaults({
+    "elem_width": width,
+    "elem_height": height
+  });
   var root = d3.stratify()
       .id(function(d) { return d.column; })
       .parentId(function(d) { return d.parent; })(tree);
