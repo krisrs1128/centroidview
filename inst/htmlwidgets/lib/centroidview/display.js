@@ -8,6 +8,7 @@
 var cur_cluster = 1;
 var responsive = true;
 var max_cluster = 1;
+var scales;
 
 function centroidview(elem, tree, data, ts_data, width, height) {
   var param = parameter_defaults({
@@ -25,7 +26,7 @@ function centroidview(elem, tree, data, ts_data, width, height) {
   param.elem_height = param.elem_height - param.margin.top - param.margin.bottom;
 
   // get some of the scales
-  var scales = scales_dictionary(tree, data, param);
+  scales = scales_dictionary(tree, data, param);
   var facet_x = extract_unique(data, "facet_x");
   var histo_axis = d3.axisBottom(scales.histo_x)
       .tickSize(0)
@@ -47,7 +48,6 @@ function centroidview(elem, tree, data, ts_data, width, height) {
     scales,
     param.margin,
     param.n_clusters,
-    cur_cluster,
     facet_x
   );
 
@@ -79,6 +79,7 @@ function centroidview(elem, tree, data, ts_data, width, height) {
   // add the button interactivity
   draw_buttons(
     elem,
+    param.n_clusters,
     param.elem_width,
     param.elem_height
   );
@@ -172,7 +173,6 @@ function tree_voronoi(elem,
                       scales,
                       margin,
                       n_clusters,
-                      cur_cluster,
                       facet_x) {
   // Define voronoi polygons for the tree nodes
   var voronoi = d3.voronoi()
@@ -281,11 +281,7 @@ function draw_histo(elem,
     });
 }
 
-function draw_buttons(elem, elem_width, elem_height) {
-  d3.select(elem)
-    .append("button")
-    .text("New Cluster");
-
+function draw_buttons(elem, n_clusters, elem_width, elem_height) {
   d3.select(elem)
     .append("button")
     .text("Cycle");
@@ -293,4 +289,14 @@ function draw_buttons(elem, elem_width, elem_height) {
   d3.select(elem)
     .select("#base")
     .on("click", function() {responsive = !responsive;});
+
+
+  d3.select(elem).select("#base")
+    .on("dblclick",function() {
+      if (max_cluster < n_clusters) {
+        max_cluster += 1;
+        cur_cluster = max_cluster;
+        scales.histo_offset.domain(d3.range(1, max_cluster + 2));
+      }
+    });
 }
