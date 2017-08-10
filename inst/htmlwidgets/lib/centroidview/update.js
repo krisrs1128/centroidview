@@ -25,6 +25,7 @@ function update_wrapper(elem,
                         ts_data,
                         d,
                         scales,
+                        histo_axis,
                         cur_cluster,
                         n_clusters,
                         facet_x) {
