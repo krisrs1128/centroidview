@@ -2,7 +2,7 @@
  * Visualization of hierarchical clustering centroids
  *
  * author: sankaran.kris@gmail./*
- * date: 08/04/2017
+ * date: 08/08/2017
  */
 
 var cur_cluster = 1;
@@ -24,6 +24,9 @@ function centroidview(elem, tree, data, ts_data) {
   // get some of the scales
   var scales = scales_dictionary(tree, data, param);
   var facet_x = extract_unique(data, "facet_x");
+  var histo_axis = d3.axisBottom(scales.histo_x)
+      .tickSize(0)
+      .ticks(3, "f");
 
   // Draw the tree
   draw_tree(
@@ -35,7 +38,9 @@ function centroidview(elem, tree, data, ts_data) {
   tree_voronoi(
     elem,
     root,
+    data,
     ts_data,
+    histo_axis,
     scales,
     param.margin,
     param.n_clusters,
@@ -57,6 +62,16 @@ function centroidview(elem, tree, data, ts_data) {
     data,
     scales.tree_y,
     scales.tile_x
+  );
+
+  // draw the histogram
+  draw_histo(
+    elem,
+    data,
+    scales.histo_group,
+    scales.centroid_x.range()[0],
+    param.elem_width,
+    param.elem_height
   );
 }
 
@@ -142,7 +157,9 @@ function draw_tree(elem, root, tree_x_scale, tree_y_scale) {
 
 function tree_voronoi(elem,
                       root,
+                      data,
                       ts_data,
+                      histo_axis,
                       scales,
                       margin,
                       n_clusters,
@@ -175,9 +192,11 @@ function tree_voronoi(elem,
         update_wrapper(
           elem,
           root,
+          data,
           ts_data,
           d,
           scales,
+          histo_axis,
           cur_cluster,
           n_clusters,
           facet_x
@@ -227,4 +246,33 @@ function draw_focus(elem, data, tree_y_scale, tile_x_scale) {
   d3.select(elem)
     .append("rect")
     .attrs({"class": "hm_focus"});
+}
+
+function draw_histo(elem,
+                    data,
+                    histo_group_scale,
+                    histo_x_start,
+                    elem_width,
+                    elem_height) {
+  d3.select(elem)
+    .select("#group_histo")
+    .selectAll(".histo_label")
+    .data(extract_unique(data, "group")).enter()
+    .append("text")
+    .attrs({
+      "x": elem_width,
+      "y": function(d) { return histo_group_scale(d); },
+      "class": "histo_label",
+      "alignment-baseline": "hanging",
+      "text-anchor": "end"
+    })
+    .text(function(d) { return d; });
+
+  d3.select(elem)
+    .select("#histo_axis")
+    .attrs({
+      "transform": "translate("  +
+        histo_x_start + "," +
+        (elem_height) + ")"
+    });
 }

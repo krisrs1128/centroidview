@@ -11,10 +11,11 @@
 #' library("ape")
 #' library("tibble")
 #' library("dplyr")
+#' library("tidyr")
 #'
 #' # simulate random matrix
-#' n <- 1000
-#' p <- 20
+#' n <- 100
+#' p <- 10
 #' x <- matrix(rnorm(n * p), n, p)
 #' hc <- hclust(dist(x))
 #'
