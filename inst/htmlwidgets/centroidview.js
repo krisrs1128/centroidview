@@ -22,7 +22,9 @@ HTMLWidgets.widget({
           el,
           x.phy_df,
           x.melted_data,
-          ts_data
+          ts_data,
+          width,
+          height
         );
       },
 
