@@ -48,8 +48,7 @@ function centroidview(elem, tree, data, ts_data, width, height) {
     param.margin,
     param.n_clusters,
     cur_cluster,
-    facet_x,
-    true
+    facet_x
   );
 
   // draw the heatmap
@@ -73,6 +72,13 @@ function centroidview(elem, tree, data, ts_data, width, height) {
     data,
     scales.histo_group,
     scales.centroid_x.range()[0],
+    param.elem_width,
+    param.elem_height
+  );
+
+  // add the button interactivity
+  draw_buttons(
+    elem,
     param.elem_width,
     param.elem_height
   );
@@ -167,8 +173,7 @@ function tree_voronoi(elem,
                       margin,
                       n_clusters,
                       cur_cluster,
-                      facet_x,
-                      responsive) {
+                      facet_x) {
   // Define voronoi polygons for the tree nodes
   var voronoi = d3.voronoi()
       .x(function(d) { return scales.tree_x(d.data.x); })
@@ -274,4 +279,18 @@ function draw_histo(elem,
         histo_x_start + "," +
         (elem_height) + ")"
     });
+}
+
+function draw_buttons(elem, elem_width, elem_height) {
+  d3.select(elem)
+    .append("button")
+    .text("New Cluster");
+
+  d3.select(elem)
+    .append("button")
+    .text("Cycle");
+
+  d3.select(elem)
+    .select("#base")
+    .on("click", function() {responsive = !responsive;});
 }
