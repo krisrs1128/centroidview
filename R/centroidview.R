@@ -6,6 +6,7 @@
 #' @importFrom dplyr rename mutate
 #' @importFrom tibble data_frame as_data_frame
 #' @importFrom plyr dlply .
+#' @importFrom tidyr gather
 #'
 #' @examples
 #' library("ape")
