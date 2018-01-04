@@ -1,0 +1,80 @@
+---
+title: "Antibiotics and the Microbiome"
+author: "Kris Sankaran"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r data-prep}
+library("centroidview")
+library("ape")
+library("phyloseq")
+library("dplyr")
+library("forcats")
+
+download.file("https://github.com/krisrs1128/treelapse/raw/master/data/abt.rda", "abt.rda")
+abt <- get(load("abt.rda")) %>%
+  filter_taxa(function(x) { var(x) > 200 }, TRUE)
+
+x <- get_taxa(abt) %>%
+  asinh()
+```
+
+```{r}
+taxa_labels <- function(taxa, degree = "Taxon_5") {
+  labels <- data.frame(taxa)[, degree] %>%
+    as.character()
+  labels[is.na(labels)] <- "Other"
+  labels[labels == ""] <- "Other"
+  fct_lump(labels, 6) %>%
+    fct_infreq()
+}
+```
+
+Prepare the hierarchical clustering tree.
+
+```{r}
+D <- dist(x)
+dendro <- reorder(as.dendrogram(hclust(D)), -colMeans(x))
+
+phy <- as.phylo(as.hclust(dendro))
+plot(phy)
+phy_data <- get("last_plot.phylo", envir = .PlotPhyloEnv)
+
+node_data <- data_frame(
+  column = seq_along(phy_data$xx),
+  x = phy_data$xx,
+  y = phy_data$yy
+)
+
+phy_df <- as_data_frame(phy$edge) %>%
+  dplyr::rename(parent = V1, column = V2) %>%
+  left_join(node_data)
+mapping <- setNames(phy$tip, seq_along(phy$tip))
+phy_df <- rbind(
+  phy_df,
+  data_frame(parent = "", column = phy$edge[1, 1], y = mean(phy_df$y), x = 0.03) # root node
+) %>%
+  mutate(column = as.character(column))
+```
+
+Prepare other supplemental grouping information.
+
+```{r grouping}
+group <- as.character(taxa_labels(tax_table(abt)))
+facet_x <- sample_data(abt)$time
+facet <- as.character(sample_data(abt)$ind)
+```
+
+The final display appears below. Click the display to freeze it (for taking a
+screenshot, for example). Double click to introduce new clusters, and scroll to
+cycle through existing clusters..
+
+```{r final_display, fig.width = 9, fig.height = 6.5}
+dimnames(x) <- NULL
+centroidview(x, phy_df, group, facet, facet_x)
+```

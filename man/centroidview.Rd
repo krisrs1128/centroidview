@@ -51,4 +51,3 @@ phy_df <- rbind(phy_df, tmp_root)
 
 centroidview(x, phy_df, group, facet, facet_x)
 }
-

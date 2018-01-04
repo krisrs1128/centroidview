@@ -61,7 +61,7 @@ function elemwise_mean(x_array, facets, facets_x) {
   var means = [];
   for (var j = 0; j < facets.length; j++) {
     var array_sub = x_array.filter(function(d) {
-      return parseFloat(d[0].facet) == facets[j];
+      return d[0].facet == facets[j];
     });
 
     var facet_mean = [];
